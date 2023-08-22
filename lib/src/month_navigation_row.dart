@@ -10,7 +10,7 @@ import 'week_picker.dart';
 /// [WeekPicker],
 /// [RangePicker].
 ///
-/// It is row with [title] of showing month in the center and icons to selects
+/// It is row with [monthTitle] of showing month in the center and icons to selects
 /// previous and next month around it.
 class MonthNavigationRow extends StatelessWidget {
   /// Key for previous page icon.
@@ -29,6 +29,12 @@ class MonthNavigationRow extends StatelessWidget {
   /// Function called when [prevIcon] is tapped.
   final VoidCallback? onPreviousMonthTapped;
 
+  /// Function called when [nextIcon] is tapped.
+  final VoidCallback? onNextYearTapped;
+
+  /// Function called when [prevIcon] is tapped.
+  final VoidCallback? onPreviousYearTapped;
+
   /// Tooltip for the [nextIcon].
   final String? nextMonthTooltip;
 
@@ -42,7 +48,13 @@ class MonthNavigationRow extends StatelessWidget {
   final Widget prevIcon;
 
   /// Usually [Text] widget.
-  final Widget? title;
+  final Widget? monthTitle;
+
+  /// Usually [Text] widget.
+  final Widget? yearTitle;
+
+  /// Perdiod BoxDecoration
+  final BoxDecoration? displayedPeriodDecoration;
 
   /// Creates month navigation row.
   const MonthNavigationRow({
@@ -51,49 +63,99 @@ class MonthNavigationRow extends StatelessWidget {
     this.nextPageIconKey,
     this.onNextMonthTapped,
     this.onPreviousMonthTapped,
+    this.onNextYearTapped,
+    this.onPreviousYearTapped,
     this.nextMonthTooltip,
     this.previousMonthTooltip,
-    this.title,
+    this.monthTitle,
+    this.yearTitle,
+    this.displayedPeriodDecoration,
     required this.nextIcon,
-    required this.prevIcon
+    required this.prevIcon,
   }) : super(key: key);
 
   @override
-  // ignore: prefer_expression_function_bodies
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Semantics(
-          sortKey: MonthPickerSortKey.previousMonth,
-          child: IconBtn(
-            key: previousPageIconKey,
-            icon: prevIcon,
-            tooltip: previousMonthTooltip,
-            onTap: onPreviousMonthTapped,
-          ),
-        ),
-        Expanded(
-          child: Container(
-            alignment: Alignment.center,
-            child: Center(
-              child: ExcludeSemantics(
-                child: title,
+  Widget build(BuildContext context) => Row(
+        children: [
+          Flexible(
+            child: Container(
+              decoration: displayedPeriodDecoration,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Semantics(
+                    sortKey: MonthPickerSortKey.previousMonth,
+                    child: IconBtn(
+                      key: previousPageIconKey,
+                      icon: prevIcon,
+                      tooltip: previousMonthTooltip,
+                      onTap: onPreviousMonthTapped,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Center(
+                        child: ExcludeSemantics(
+                          child: monthTitle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Semantics(
+                    sortKey: MonthPickerSortKey.nextMonth,
+                    child: IconBtn(
+                      key: nextPageIconKey,
+                      icon: nextIcon,
+                      tooltip: nextMonthTooltip,
+                      onTap: onNextMonthTapped,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ),
-        Semantics(
-          sortKey: MonthPickerSortKey.nextMonth,
-          child: IconBtn(
-            key: nextPageIconKey,
-            icon: nextIcon,
-            tooltip: nextMonthTooltip,
-            onTap: onNextMonthTapped,
+          SizedBox(width: 14.0),
+          Flexible(
+            child: Container(
+              decoration: displayedPeriodDecoration,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Semantics(
+                    sortKey: MonthPickerSortKey.previousMonth,
+                    child: IconBtn(
+                      key: previousPageIconKey,
+                      icon: prevIcon,
+                      tooltip: previousMonthTooltip,
+                      onTap: onPreviousYearTapped,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Center(
+                        child: ExcludeSemantics(
+                          child: yearTitle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Semantics(
+                    sortKey: MonthPickerSortKey.nextMonth,
+                    child: IconBtn(
+                      key: nextPageIconKey,
+                      icon: nextIcon,
+                      tooltip: nextMonthTooltip,
+                      onTap: onNextYearTapped,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 }

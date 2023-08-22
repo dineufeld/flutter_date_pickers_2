@@ -1,5 +1,8 @@
 /// Bunch of useful functions for date pickers.
 class DatePickerUtils {
+  /// Bunch of useful functions for date pickers.
+  const DatePickerUtils();
+
   /// Returns if two objects have same year, month and day.
   /// Time doesn't matter.
   static bool sameDate(DateTime dateTimeOne, DateTime dateTimeTwo) =>
@@ -12,6 +15,20 @@ class DatePickerUtils {
   static bool sameMonth(DateTime dateTimeOne, DateTime dateTimeTwo) =>
       dateTimeOne.year == dateTimeTwo.year &&
       dateTimeOne.month == dateTimeTwo.month;
+
+  /// Returns if two objects have same year.
+  /// Day and time don't matter/
+  static bool sameYear(DateTime dateTimeOne, DateTime dateTimeTwo) =>
+      dateTimeOne.year == dateTimeTwo.year;
+
+  /// Returns if the date from the next year is before the given last date
+  static bool isFollowingYearEarlierDateBeforeLastDate(
+      DateTime dateTimeOne, DateTime dateTimeTwo) {
+    DateTime nextYearAdjustedDate =
+        DateTime(dateTimeOne.year + 1, dateTimeOne.month - 1);
+    return !nextYearAdjustedDate
+        .isBefore(DateTime(dateTimeTwo.year, dateTimeTwo.month));
+  }
 
   // Do not use this directly - call getDaysInMonth instead.
   static const List<int> _daysInMonth = <int>[

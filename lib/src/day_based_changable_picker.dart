@@ -179,6 +179,7 @@ class _DayBasedChangeablePickerState<T>
                         padding: widget.datePickerLayoutSettings.contentPadding,
                         child: _buildMonthNavigationRow()),
                   ),
+            SizedBox(height: 16.0),
             Expanded(
               child: Semantics(
                 sortKey: MonthPickerSortKey.calendar,
@@ -233,8 +234,17 @@ class _DayBasedChangeablePickerState<T>
                 state.isFirstMonth ? null : _presenter.gotoPrevMonth,
             onNextMonthTapped:
                 state.isLastMonth ? null : _presenter.gotoNextMonth,
-            title: Text(
-              state.curMonthDis,
+            onPreviousYearTapped:
+                state.isFirstYear ? null : _presenter.gotoPrevYear,
+            onNextYearTapped: state.isLastYear ? null : _presenter.gotoNextYear,
+            monthTitle: Text(
+              state.curMonthDis.split(' ')[0],
+              key: widget.datePickerKeys?.selectedPeriodKeys,
+              style: _resultStyles.displayedPeriodTitle,
+            ),
+            displayedPeriodDecoration: _resultStyles.displayedPeriodDecoration,
+            yearTitle: Text(
+              state.curMonthDis.split(' ')[1],
               key: widget.datePickerKeys?.selectedPeriodKeys,
               style: _resultStyles.displayedPeriodTitle,
             ),
@@ -250,7 +260,7 @@ class _DayBasedChangeablePickerState<T>
         itemCount:
             DatePickerUtils.monthDelta(widget.firstDate, widget.lastDate) + 1,
         itemBuilder: _buildCalendar,
-        onPageChanged: _handleMonthPageChanged,
+        onPageChanged: _handlePageChanged,
       );
 
   Widget _buildCalendar(BuildContext context, int index) {
@@ -299,12 +309,13 @@ class _DayBasedChangeablePickerState<T>
     _presenter.dispose();
 
     _presenter = DayBasedChangeablePickerPresenter(
-        firstDate: widget.firstDate,
-        lastDate: widget.lastDate,
-        localizations: localizations,
-        showPrevMonthDates: widget.datePickerLayoutSettings.showPrevMonthEnd,
-        showNextMonthDates: widget.datePickerLayoutSettings.showNextMonthStart,
-        firstDayOfWeekIndex: widget.datePickerStyles.firstDayOfeWeekIndex);
+      firstDate: widget.firstDate,
+      lastDate: widget.lastDate,
+      localizations: localizations,
+      showPrevMonthDates: widget.datePickerLayoutSettings.showPrevMonthEnd,
+      showNextMonthDates: widget.datePickerLayoutSettings.showNextMonthStart,
+      firstDayOfWeekIndex: widget.datePickerStyles.firstDayOfeWeekIndex,
+    );
     _presenter.data.listen(_onStateChanged);
 
     // date used to define what month should be shown
@@ -326,10 +337,9 @@ class _DayBasedChangeablePickerState<T>
         duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
   }
 
-  void _handleMonthPageChanged(int monthPage) {
+  void _handlePageChanged(int monthPage) {
     DateTime firstMonth = widget.firstDate;
     DateTime newMonth = DateTime(firstMonth.year, firstMonth.month + monthPage);
-    _presenter.changeMonth(newMonth);
 
     widget.onMonthChanged?.call(newMonth);
   }
