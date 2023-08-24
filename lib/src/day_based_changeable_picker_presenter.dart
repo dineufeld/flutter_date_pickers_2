@@ -77,28 +77,24 @@ class DayBasedChangeablePickerPresenter {
   /// Update state to show the previous year without changing the month.
   void gotoPrevYear() {
     DateTime oldCur = _lastVal!.currentMonth;
-    DateTime newCurDate = DateTime(
-        oldCur.year - 1, oldCur.month, 1); // Set the day to 1 for safety
-
+    DateTime newCurDate = DateTime(oldCur.year - 1, oldCur.month, 1);
     changeDate(newCurDate);
   }
 
   /// Update state to show the next year without changing the month.
   void gotoNextYear() {
     DateTime oldCur = _lastVal!.currentMonth;
-    DateTime newCurDate = DateTime(
-        oldCur.year + 1, oldCur.month, 1); // Set the day to 1 for safety
+    DateTime newCurDate = DateTime(oldCur.year + 1, oldCur.month, 1);
 
     changeDate(newCurDate);
   }
 
   /// Update state to change to the [newDate], maintaining the day and month.
   void changeDate(DateTime newDate) {
-    bool sameMonthAndYear = _lastVal != null &&
-        DatePickerUtils.sameMonth(_lastVal!.currentMonth, newDate) &&
-        DatePickerUtils.sameYear(_lastVal!.currentMonth, newDate);
+    bool isSameMonthAndYear = _lastVal != null &&
+        DatePickerUtils.sameMonthAndYear(_lastVal!.currentMonth, newDate);
 
-    if (sameMonthAndYear) return;
+    if (isSameMonthAndYear) return;
 
     int monthPage = DatePickerUtils.monthDelta(firstDate, newDate);
     DateTime prevMonth =

@@ -21,11 +21,21 @@ class DatePickerUtils {
   static bool sameYear(DateTime dateTimeOne, DateTime dateTimeTwo) =>
       dateTimeOne.year == dateTimeTwo.year;
 
+  /// Returns if two objects have same month and year.
+  /// Day and time don't matter/
+  static bool sameMonthAndYear(DateTime dateTimeOne, DateTime dateTimeTwo) =>
+      sameMonth(dateTimeOne, dateTimeTwo) && sameYear(dateTimeOne, dateTimeTwo);
+
   /// Returns if the date from the next year is before the given last date
   static bool isFollowingYearEarlierDateBeforeLastDate(
       DateTime dateTimeOne, DateTime dateTimeTwo) {
-    DateTime nextYearAdjustedDate =
-        DateTime(dateTimeOne.year + 1, dateTimeOne.month - 1);
+    DateTime nextYearAdjustedDate;
+    if (dateTimeOne.month == 1) {
+      nextYearAdjustedDate = DateTime(dateTimeOne.year, 12, 31);
+    } else {
+      nextYearAdjustedDate =
+          DateTime(dateTimeOne.year + 1, dateTimeOne.month - 1);
+    }
     return !nextYearAdjustedDate
         .isBefore(DateTime(dateTimeTwo.year, dateTimeTwo.month));
   }
@@ -282,4 +292,23 @@ class DatePickerUtils {
   ///
   /// If two [DateTime]s is the same moment first ([a]) will be return.
   static DateTime getLatest(DateTime a, DateTime b) => a.isAfter(b) ? a : b;
+
+  /// Method to add months to a given DateTime and return a new DateTime
+  static DateTime addMonths(DateTime dt, int months) {
+    int year = dt.year;
+    int month = dt.month + months;
+
+    while (month > 12) {
+      year++;
+      month -= 12;
+    }
+
+    while (month < 1) {
+      year--;
+      month += 12;
+    }
+
+    // We're returning the first day of the resultant month
+    return DateTime(year, month, 1);
+  }
 }
