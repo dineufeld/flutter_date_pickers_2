@@ -9,6 +9,7 @@ import 'basic_day_based_widget.dart';
 import 'date_picker_keys.dart';
 import 'day_based_changeable_picker_presenter.dart';
 import 'day_picker_selection.dart';
+import 'debouncer.dart';
 import 'i_selectable_picker.dart';
 import 'month_navigation_row.dart';
 import 'semantic_sorting.dart';
@@ -109,6 +110,8 @@ class _DayBasedChangeablePickerState<T>
 
   Timer? _timer;
   StreamSubscription<T>? _changesSubscription;
+
+  final Debouncer _debouncer = Debouncer(milliseconds: 210);
 
   @override
   void initState() {
@@ -338,10 +341,12 @@ class _DayBasedChangeablePickerState<T>
   }
 
   void _handlePageChanged(int monthPage) {
-    DateTime firstMonth = widget.firstDate;
-    DateTime newMonth = DateTime(firstMonth.year, firstMonth.month + monthPage);
-
-    widget.onMonthChanged?.call(newMonth);
+    _debouncer.run(() {
+      DateTime firstMonth = widget.firstDate;
+      DateTime newMonth = DatePickerUtils.addMonths(firstMonth, monthPage);
+      _presenter.changeDate(newMonth);
+      widget.onMonthChanged?.call(newMonth);
+    });
   }
 
   static MaterialLocalizations get _defaultLocalizations =>
