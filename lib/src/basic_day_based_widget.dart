@@ -9,6 +9,9 @@ import 'styles/event_decoration.dart';
 import 'styles/layout_settings.dart';
 import 'utils.dart';
 
+// ignore: public_member_api_docs
+enum CellType { previousMonth, currentMonth, nextMonth }
+
 /// Widget for date pickers based on days and cover entire month.
 /// Each cell of this picker is day.
 class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
@@ -162,7 +165,8 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
       List<Widget> days = List.generate(firstDayOffset, (index) => index)
           .reversed
           .map((i) => daysInPrevMonth - i)
-          .map((day) => _buildCell(prevYear, prevMonth, day))
+          .map((day) =>
+              _buildCell(prevYear, prevMonth, day, CellType.previousMonth))
           .toList();
 
       result = days;
@@ -181,7 +185,7 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
     final int daysInMonth = DatePickerUtils.getDaysInMonth(year, month);
 
     for (int i = 1; i <= daysInMonth; i += 1) {
-      Widget dayWidget = _buildCell(year, month, i);
+      Widget dayWidget = _buildCell(year, month, i, CellType.currentMonth);
       result.add(dayWidget);
     }
 
@@ -208,17 +212,25 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
 
     int nextMonth = month + 1;
     result = List.generate(emptyCellsNum, (i) => i + 1)
-        .map((day) => _buildCell(year, nextMonth, day))
+        .map((day) => _buildCell(year, nextMonth, day, CellType.nextMonth))
         .toList();
 
     return result;
   }
 
-  Widget _buildCell(int year, int month, int day) {
+  Widget _buildCell(int year, int month, int day, CellType cellType) {
     DateTime dayToBuild = DateTime(year, month, day);
     dayToBuild = _checkDateTime(dayToBuild);
 
     DayType dayType = selectablePicker.getDayType(dayToBuild);
+
+    TextStyle? itemStyle;
+
+    if (cellType == CellType.previousMonth) {
+      itemStyle = datePickerStyles.previousMonthDayStyle;
+    } else if (cellType == CellType.nextMonth) {
+      itemStyle = datePickerStyles.nextMonthDayStyle;
+    }
 
     Widget dayWidget = _DayCell(
       day: dayToBuild,
@@ -228,6 +240,7 @@ class DayBasedPicker<T> extends StatelessWidget with CommonDatePickerFunctions {
       contentMargin: datePickerLayoutSettings.cellContentMargin,
       eventDecorationBuilder: eventDecorationBuilder,
       localizations: localizations,
+      customTextStyle: itemStyle,
     );
 
     if (dayType != DayType.disabled) {
@@ -279,6 +292,8 @@ class _DayCell extends StatelessWidget {
 
   final MaterialLocalizations localizations;
 
+  final TextStyle? customTextStyle;
+
   const _DayCell({
     Key? key,
     required this.day,
@@ -288,6 +303,7 @@ class _DayCell extends StatelessWidget {
     required this.currentDate,
     required this.localizations,
     this.eventDecorationBuilder,
+    this.customTextStyle,
   }) : super(key: key);
 
   @override
@@ -324,6 +340,8 @@ class _DayCell extends StatelessWidget {
       decoration = eDecoration?.boxDecoration ?? decoration;
       itemStyle = eDecoration?.textStyle ?? itemStyle;
     }
+
+    itemStyle = customTextStyle ?? itemStyle;
 
     String semanticLabel = '${localizations.formatDecimal(day.day)}, '
         '${localizations.formatFullDate(day)}';
